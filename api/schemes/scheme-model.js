@@ -22,7 +22,7 @@ async function findById(scheme_id) {
   }
 
   return {
-    scheme_id: rows[0].scheme_id,
+    scheme_id: Number(scheme_id),
     scheme_name: rows[0].scheme_name,
     steps: rows
       .filter((row) => row.step_id)
@@ -43,20 +43,15 @@ async function findSteps(scheme_id) {
   return rows;
 }
 
-function add(scheme) {
-  // EXERCISE D
-  /*
-    1D- This function creates a new scheme and resolves to _the newly created scheme_.
-  */
+async function add(scheme) {
+  return db('schemes')
+    .insert(scheme)
+    .then(([id]) => findById(id));
 }
 
-function addStep(scheme_id, step) {
-  // EXERCISE E
-  /*
-    1E- This function adds a step to the scheme with the given `scheme_id`
-    and resolves to _all the steps_ belonging to the given `scheme_id`,
-    including the newly created one.
-  */
+async function addStep(scheme_id, step) {
+  await db('steps').insert({ ...step, scheme_id });
+  return findSteps(scheme_id);
 }
 
 module.exports = {
